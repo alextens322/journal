@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн журнал оценок - Главная</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab">Загрузка оценок</a>
+            <a href="journal.html" class="tab">Журнал оценок</a>
+            <a href="grades-view.html" class="tab">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab">О разработчике</a>
+        </div>
+        
+        
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Функция для обновления информации на главной странице
+        function updateDashboard() {
+            const recentActions = document.getElementById('recentActions');
+            const generalStats = document.getElementById('generalStats');
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+            
+            // Обновляем информацию о последних действиях
+            if (gradesData.length > 0) {
+                const lastUpdate = new Date(gradesData[gradesData.length - 1].date);
+                recentActions.innerHTML = `
+                    <p><strong>Всего записей:</strong> ${gradesData.length}</p>
+                    <p><strong>Последнее обновление:</strong> ${lastUpdate.toLocaleDateString()}</p>
+                    <p><strong>Учеников:</strong> ${new Set(gradesData.map(g => g.name)).size}</p>
+                    <p><strong>Классов:</strong> ${new Set(gradesData.map(g => g.class)).size}</p>
+                `;
+            } else {
+                recentActions.innerHTML = '<p>Нет данных. Начните с загрузки оценок.</p>';
+            }
+            
+            // Обновляем общую статистику
+            if (gradesData.length > 0) {
+                const totalGrades = gradesData.length;
+                const avgGrade = (gradesData.reduce((sum, g) => sum + g.grade, 0) / totalGrades).toFixed(2);
+                const grade5 = gradesData.filter(g => g.grade === 5).length;
+                const grade4 = gradesData.filter(g => g.grade === 4).length;
+                const grade3 = gradesData.filter(g => g.grade === 3).length;
+                const grade2 = gradesData.filter(g => g.grade === 2).length;
+                
+                generalStats.innerHTML = `
+                    <p><strong>Средний балл:</strong> ${avgGrade}</p>
+                    <p><strong>Отличников (5):</strong> ${grade5} (${((grade5 / totalGrades) * 100).toFixed(1)}%)</p>
+                    <p><strong>Хорошистов (4):</strong> ${grade4} (${((grade4 / totalGrades) * 100).toFixed(1)}%)</p>
+                    <p><strong>Удовлетворительно (3):</strong> ${grade3} (${((grade3 / totalGrades) * 100).toFixed(1)}%)</p>
+                    <p><strong>Неудовлетворительно (2):</strong> ${grade2} (${((grade2 / totalGrades) * 100).toFixed(1)}%)</p>
+                `;
+            } else {
+                generalStats.innerHTML = '<p>Загрузите данные для отображения статистики</p>';
+            }
+        }
+        
+        // Обновляем дашборд при загрузке страницы
+        document.addEventListener('DOMContentLoaded', updateDashboard);
+        
+        // Подсвечиваем активную вкладку
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                const href = tab.getAttribute('href');
+                if (href === currentPage || (currentPage === '' && href === 'upload.html')) {
+                    tab.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

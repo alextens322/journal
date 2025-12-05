@@ -1,0 +1,407 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: linear-gradient(135deg, #2c3e50, #4a6491);
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 2.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #34495e;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+
+.tab {
+    padding: 14px 20px;
+    background-color: #34495e;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.tab:hover {
+    background-color: #3d566e;
+}
+
+.tab.active {
+    background-color: #2980b9;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    padding: 30px;
+    background-color: white;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-top: 1px;
+    min-height: 500px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.section-title {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.file-input-area {
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    background-color: #f8fafc;
+    transition: all 0.3s;
+}
+
+.file-input-area:hover {
+    background-color: #ebf5fb;
+    border-color: #2980b9;
+}
+
+.file-input-label {
+    display: block;
+    font-size: 1.2rem;
+    color: #3498db;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.file-formats {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+th {
+    background-color: #34495e;
+    color: white;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Стили для таблицы с предметами как в примере */
+.grades-table {
+    font-size: 0.9rem;
+}
+
+.grades-table th, .grades-table td {
+    padding: 8px 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.grades-table th:first-child,
+.grades-table td:first-child {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 1;
+}
+
+.grades-table th {
+    background-color: #4a6491;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.grades-table th.subject-header {
+    background-color: #3a5279;
+}
+
+.student-name {
+    font-weight: 600;
+    min-width: 200px;
+}
+
+.grade-cell {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.grade-5 {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.grade-4 {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.grade-3 {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.grade-2 {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.class-header {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.stat-card {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #3498db;
+}
+
+.stat-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 40px;
+}
+
+.help-content {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.help-content h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.help-content ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.about-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.developer-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #ecf0f1;
+}
+
+.developer-info {
+    flex: 1;
+}
+
+.contact-info {
+    margin-top: 20px;
+}
+
+.contact-info div {
+    margin-bottom: 10px;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.hidden {
+    display: none;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Стили для кнопок в таблице */
+.table-btn {
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .tab {
+        min-width: 100px;
+        padding: 12px 5px;
+        font-size: 0.9rem;
+    }
+    
+    .tab-content {
+        padding: 20px 10px;
+    }
+    
+    .about-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .student-name {
+        min-width: 150px;
+    }
+    
+    .grade-cell {
+        width: 45px;
+    }
+    
+    .btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+}
