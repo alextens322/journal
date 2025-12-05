@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика (таблица) - Онлайн журнал оценок</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab">Загрузка оценок</a>
+            <a href="journal.html" class="tab">Журнал оценок</a>
+            <a href="grades-view.html" class="tab">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab active">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab">О программе</a>
+        </div>
+        
+        <div class="tab-content active">
+            <h2 class="section-title">Статистика успеваемости (табличный вид)</h2>
+            
+            <div id="classStatsContainer">
+                <!-- Статистика по классам будет загружена сюда -->
+            </div>
+            
+            <h3 class="section-title">Общая статистика по предметам</h3>
+            <div class="table-container">
+                <table id="overallStatsTable">
+                    <thead>
+                        <tr>
+                            <th>Предмет</th>
+                            <th>Средняя оценка</th>
+                            <th>Медиана</th>
+                            <th>5 (отлично)</th>
+                            <th>4 (хорошо)</th>
+                            <th>3 (удовлетв.)</th>
+                            <th>2 (неудовлетв.)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overallStatsBody">
+                        <!-- Данные будут загружены сюда -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Инициализация для страницы статистики
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClassStats();
+            updateOverallStats();
+        });
+        
+        // Функция для обновления статистики по классам
+        function updateClassStats() {
+            const container = document.getElementById('classStatsContainer');
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+            
+            if (gradesData.length === 0) {
+                container.innerHTML = '<p>Нет данных для отображения статистики.</p>';
+                return;
+            }
+            
+            // Группируем данные по классам и предметам
+            const classStats = {};
+            
+            gradesData.forEach(record => {
+                const key = `${record.class}-${record.subject}`;
+                
+                if (!classStats[key]) {
+                    classStats[key] = {
+                        class: record.class,
+                        subject: record.subject,
+                        grades: []
+                    };
+                }
+                
+                classStats[key].grades.push(record.grade);
+            });
+            
+            // Генерируем HTML для статистики по классам
+            let html = '<h3 class="section-title">Статистика по классам и предметам</h3>';
+            
+            Object.values(classStats).forEach(stat => {
+                const grades = stat.grades;
+                const total = grades.length;
+                const average = (grades.reduce((a, b) => a + b, 0) / total).toFixed(2);
+                
+                // Медиана
+                const sorted = [...grades].sort((a, b) => a - b);
+                const mid = Math.floor(sorted.length / 2);
+                const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+                
+                // Подсчет оценок
+                const count5 = grades.filter(g => g === 5).length;
+                const count4 = grades.filter(g => g === 4).length;
+                const count3 = grades.filter(g => g === 3).length;
+                const count2 = grades.filter(g => g === 2).length;
+                
+                html += `
+                    <div class="stat-card">
+                        <div class="stat-title">${stat.class} - ${stat.subject}</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div><strong>Средняя оценка:</strong> ${average}</div>
+                            <div><strong>Медиана:</strong> ${median}</div>
+                            <div><strong>Всего оценок:</strong> ${total}</div>
+                            <div><strong>5 (отлично):</strong> ${count5} (${((count5 / total) * 100).toFixed(1)}%)</div>
+                            <div><strong>4 (хорошо):</strong> ${count4} (${((count4 / total) * 100).toFixed(1)}%)</div>
+                            <div><strong>3 (удовл.):</strong> ${count3} (${((count3 / total) * 100).toFixed(1)}%)</div>
+                            <div><strong>2 (неудовл.):</strong> ${count2} (${((count2 / total) * 100).toFixed(1)}%)</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Функция для обновления общей статистики
+        function updateOverallStats() {
+            const tbody = document.getElementById('overallStatsBody');
+            tbody.innerHTML = '';
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+            
+            if (gradesData.length === 0) {
+                return;
+            }
+            
+            // Группируем данные по предметам
+            const subjectStats = {};
+            
+            gradesData.forEach(record => {
+                if (!subjectStats[record.subject]) {
+                    subjectStats[record.subject] = {
+                        subject: record.subject,
+                        grades: []
+                    };
+                }
+                
+                subjectStats[record.subject].grades.push(record.grade);
+            });
+            
+            // Заполняем таблицу
+            Object.values(subjectStats).forEach(stat => {
+                const grades = stat.grades;
+                const total = grades.length;
+                const average = (grades.reduce((a, b) => a + b, 0) / total).toFixed(2);
+                
+                // Медиана
+                const sorted = [...grades].sort((a, b) => a - b);
+                const mid = Math.floor(sorted.length / 2);
+                const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+                
+                // Подсчет оценок
+                const count5 = grades.filter(g => g === 5).length;
+                const count4 = grades.filter(g => g === 4).length;
+                const count3 = grades.filter(g => g === 3).length;
+                const count2 = grades.filter(g => g === 2).length;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stat.subject}</td>
+                    <td>${average}</td>
+                    <td>${median}</td>
+                    <td>${count5} (${((count5 / total) * 100).toFixed(1)}%)</td>
+                    <td>${count4} (${((count4 / total) * 100).toFixed(1)}%)</td>
+                    <td>${count3} (${((count3 / total) * 100).toFixed(1)}%)</td>
+                    <td>${count2} (${((count2 / total) * 100).toFixed(1)}%)</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

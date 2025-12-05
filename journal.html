@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Журнал оценок - Онлайн журнал оценок</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab">Загрузка оценок</a>
+            <a href="journal.html" class="tab active">Журнал оценок</a>
+            <a href="grades-view.html" class="tab">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab">О программе</a>
+        </div>
+        
+        <div class="tab-content active">
+            <h2 class="section-title">Журнал оценок</h2>
+            
+            <div class="form-group">
+                <h3>Добавить/редактировать запись</h3>
+                <form id="studentForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label for="studentName">ФИО ученика *</label>
+                            <input type="text" id="studentName" required>
+                        </div>
+                        <div>
+                            <label for="studentClass">Класс *</label>
+                            <input type="text" id="studentClass" placeholder="11А" required>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <label for="subject">Предмет *</label>
+                            <select id="subject" required>
+                                <option value="">Выберите предмет</option>
+                                <option value="Информатика">Информатика</option>
+                                <option value="Физика">Физика</option>
+                                <option value="Математика">Математика</option>
+                                <option value="Литература">Литература</option>
+                                <option value="Музыка">Музыка</option>
+                                <option value="Русский язык">Русский язык</option>
+                                <option value="История">История</option>
+                                <option value="Химия">Химия</option>
+                                <option value="Английский язык">Английский язык</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="grade">Оценка *</label>
+                            <select id="grade" required>
+                                <option value="">Выберите оценку</option>
+                                <option value="5">5 (отлично)</option>
+                                <option value="4">4 (хорошо)</option>
+                                <option value="3">3 (удовлетворительно)</option>
+                                <option value="2">2 (неудовлетворительно)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="date">Дата</label>
+                            <input type="date" id="date">
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="btn btn-success" id="saveStudent">Добавить запись</button>
+                        <button type="button" class="btn" id="updateStudent" disabled>Сохранить изменения</button>
+                        <button type="button" class="btn" id="cancelEdit">Отмена</button>
+                    </div>
+                </form>
+            </div>
+            
+            <h3 class="section-title">Список оценок</h3>
+            <div class="actions">
+                <button class="btn" id="exportCSV">Экспорт в CSV</button>
+                <button class="btn" id="exportJSON">Экспорт в JSON</button>
+            </div>
+            
+            <div id="journalAlert" class="alert hidden"></div>
+            
+            <div class="table-container">
+                <table id="journalTable">
+                    <thead>
+                        <tr>
+                            <th>ФИО ученика</th>
+                            <th>Класс</th>
+                            <th>Предмет</th>
+                            <th>Оценка</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journalTableBody">
+                        <!-- Данные будут загружены сюда -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Инициализация для страницы журнала
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Инициализация страницы журнала...');
+            
+            // Установка текущей даты по умолчанию
+            document.getElementById('date').valueAsDate = new Date();
+            
+            // Создаем глобальную переменную для текущего редактируемого ID
+            window.currentEditId = null;
+            
+            // Инициализация обработчиков событий
+            document.getElementById('studentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addStudent();
+            });
+            
+            document.getElementById('updateStudent').addEventListener('click', updateStudent);
+            document.getElementById('cancelEdit').addEventListener('click', cancelEdit);
+            document.getElementById('exportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('exportJSON').addEventListener('click', exportToJSON);
+            
+            // Переопределяем функцию showAlert для этой страницы
+            window.showAlert = function(message, type) {
+                const alertDiv = document.getElementById('journalAlert');
+                alertDiv.textContent = message;
+                alertDiv.className = `alert alert-${type}`;
+                alertDiv.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    alertDiv.classList.add('hidden');
+                }, 5000);
+            };
+            
+            // Загружаем данные и обновляем таблицу
+            console.log('Загружаем данные и обновляем таблицу...');
+            updateJournalTable();
+        });
+    </script>
+</body>
+</html>

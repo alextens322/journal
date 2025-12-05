@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика (графики) - Онлайн журнал оценок</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab">Загрузка оценок</a>
+            <a href="journal.html" class="tab">Журнал оценок</a>
+            <a href="grades-view.html" class="tab">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab active">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab">О программе</a>
+        </div>
+        
+        <div class="tab-content active">
+            <h2 class="section-title">Статистика успеваемости (графический вид)</h2>
+            
+            <div class="chart-container">
+                <canvas id="overallChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="classChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="gradesDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Инициализация для страницы графиков
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCharts();
+        });
+        
+        // Функция для обновления графиков
+        function updateCharts() {
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+            
+            if (gradesData.length === 0) {
+                // Показываем сообщение, если нет данных
+                document.querySelectorAll('.chart-container').forEach(container => {
+                    container.innerHTML = '<p>Нет данных для отображения графиков. Загрузите данные сначала.</p>';
+                });
+                return;
+            }
+            
+            updateOverallChart();
+            updateClassChart();
+            updateGradesDistributionChart();
+        }
+        
+        // График средней оценки по предметам
+        function updateOverallChart() {
+            const ctx = document.getElementById('overallChart').getContext('2d');
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                    return;
+                }
+            }
+            
+            // Группируем данные по предметам
+            const subjectStats = {};
+            
+            gradesData.forEach(record => {
+                if (!subjectStats[record.subject]) {
+                    subjectStats[record.subject] = {
+                        subject: record.subject,
+                        grades: []
+                    };
+                }
+                
+                subjectStats[record.subject].grades.push(record.grade);
+            });
+            
+            const subjects = Object.keys(subjectStats);
+            const averages = subjects.map(subject => {
+                const grades = subjectStats[subject].grades;
+                return grades.reduce((a, b) => a + b, 0) / grades.length;
+            });
+            
+            // Удаляем предыдущий график, если он существует
+            if (window.overallChartInstance) {
+                window.overallChartInstance.destroy();
+            }
+            
+            window.overallChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subjects,
+                    datasets: [{
+                        label: 'Средняя оценка',
+                        data: averages,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Средняя оценка'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Предметы'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Средняя оценка по предметам'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // График средней оценки по классам
+        function updateClassChart() {
+            const ctx = document.getElementById('classChart').getContext('2d');
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                    return;
+                }
+            }
+            
+            // Группируем данные по классам
+            const classStats = {};
+            
+            gradesData.forEach(record => {
+                if (!classStats[record.class]) {
+                    classStats[record.class] = {
+                        class: record.class,
+                        grades: []
+                    };
+                }
+                
+                classStats[record.class].grades.push(record.grade);
+            });
+            
+            const classes = Object.keys(classStats);
+            const averages = classes.map(cls => {
+                const grades = classStats[cls].grades;
+                return grades.reduce((a, b) => a + b, 0) / grades.length;
+            });
+            
+            // Удаляем предыдущий график, если он существует
+            if (window.classChartInstance) {
+                window.classChartInstance.destroy();
+            }
+            
+            window.classChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: classes,
+                    datasets: [{
+                        label: 'Средняя оценка',
+                        data: averages,
+                        backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Средняя оценка'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Классы'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Средняя оценка по классам'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // График распределения оценок
+        function updateGradesDistributionChart() {
+            const ctx = document.getElementById('gradesDistributionChart').getContext('2d');
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                    return;
+                }
+            }
+            
+            // Подсчет оценок
+            const count5 = gradesData.filter(g => g.grade === 5).length;
+            const count4 = gradesData.filter(g => g.grade === 4).length;
+            const count3 = gradesData.filter(g => g.grade === 3).length;
+            const count2 = gradesData.filter(g => g.grade === 2).length;
+            
+            // Удаляем предыдущий график, если он существует
+            if (window.gradesDistributionChartInstance) {
+                window.gradesDistributionChartInstance.destroy();
+            }
+            
+            window.gradesDistributionChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['5 (отлично)', '4 (хорошо)', '3 (удовлетв.)', '2 (неудовлетв.)'],
+                    datasets: [{
+                        data: [count5, count4, count3, count2],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(241, 196, 15, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(241, 196, 15, 1)',
+                            'rgba(231, 76, 60, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Распределение оценок'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка оценок - Онлайн журнал оценок</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab active">Загрузка оценок</a>
+            <a href="journal.html" class="tab">Журнал оценок</a>
+            <a href="grades-view.html" class="tab">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab">О программе</a>
+        </div>
+        
+        <div class="tab-content active">
+            <h2 class="section-title">Загрузка оценок из файла</h2>
+            
+            <div class="file-input-area" id="drop-area">
+                <label for="fileInput" class="file-input-label">
+                    <strong>Нажмите для выбора файла или перетащите его сюда</strong>
+                </label>
+                <input type="file" id="fileInput" accept=".csv,.txt,.xlsx">
+                <p class="file-formats">Поддерживаемые форматы: .csv, .txt, .xlsx</p>
+            </div>
+            
+            <div style="text-align: right; margin: 20px 0;">
+                <button class="btn btn-danger" id="clearData">Очистить все данные</button>
+            </div>
+            
+            <div id="uploadAlert" class="alert hidden"></div>
+            
+            <h3 class="section-title">Загруженные данные</h3>
+            <div class="table-container">
+                <table id="uploadedTable">
+                    <thead>
+                        <tr>
+                            <th>ФИО ученика</th>
+                            <th>Класс</th>
+                            <th>Предмет</th>
+                            <th>Оценка</th>
+                            <th>Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody id="uploadedTableBody">
+                        <!-- данные будут загружены сюда -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Инициализация для страницы загрузки
+        document.addEventListener('DOMContentLoaded', function() {
+            // Обновляем таблицу при загрузке страницы
+            updateUploadedTable();
+            
+            // Инициализация обработчиков событий
+            const fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // Drag and drop
+            const dropArea = document.getElementById('drop-area');
+            dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropArea.style.backgroundColor = '#e1f0fa';
+            });
+            
+            dropArea.addEventListener('dragleave', () => {
+                dropArea.style.backgroundColor = '#f8fafc';
+            });
+            
+            dropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropArea.style.backgroundColor = '#f8fafc';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+            
+            // Осталась только кнопка "Очистить все данные"
+            document.getElementById('clearData').addEventListener('click', clearData);
+            
+            // Убраны обработчики для:
+            // document.getElementById('loadSampleData') - кнопки "Загрузить тестовые данные"
+            // document.getElementById('loadExampleData') - кнопки "Загрузить пример файла"
+        });
+        
+        // Обновление таблицы загруженных данных
+        function updateUploadedTable() {
+            const tbody = document.getElementById('uploadedTableBody');
+            tbody.innerHTML = '';
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+            
+            if (gradesData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px;">Нет данных. Загрузите файл с оценками или добавьте записи вручную.</td></tr>`;
+                return;
+            }
+            
+            // Показываем первые 20 записей
+            const displayData = gradesData.slice(0, 20);
+            
+            displayData.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${student.class}</td>
+                    <td>${student.subject}</td>
+                    <td>${student.grade}</td>
+                    <td>${student.date}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            if (gradesData.length > 20) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" style="text-align: center;">... и еще ${gradesData.length - 20} записей</td>`;
+                tbody.appendChild(row);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр оценок - Онлайн журнал оценок</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab">Загрузка оценок</a>
+            <a href="journal.html" class="tab">Журнал оценок</a>
+            <a href="grades-view.html" class="tab active">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab">О программе</a>
+        </div>
+        
+        <div class="tab-content active">
+            <h2 class="section-title">Просмотр оценок по классам</h2>
+            
+            <div class="actions">
+                <button class="btn" id="refreshGradesView">Обновить вид</button>
+                <button class="btn" id="exportGradesView">Экспорт таблицы</button>
+            </div>
+            
+            <div id="gradesViewContainer">
+                <!-- Здесь будет отображаться таблица с оценками по классам -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Инициализация для страницы просмотра оценок
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGradesView();
+            
+            document.getElementById('refreshGradesView').addEventListener('click', updateGradesView);
+            document.getElementById('exportGradesView').addEventListener('click', exportGradesViewToCSV);
+        });
+        
+        // Функция для обновления вида оценок
+        function updateGradesView() {
+            const container = document.getElementById('gradesViewContainer');
+            
+            // Загружаем данные из localStorage
+            const savedData = localStorage.getItem('gradesJournalData');
+            let gradesData = [];
+            
+            if (savedData) {
+                try {
+                    gradesData = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+            
+            if (gradesData.length === 0) {
+                container.innerHTML = '<p>Нет данных для отображения. Загрузите данные или добавьте оценки.</p>';
+                return;
+            }
+            
+            // Группируем данные по классам
+            const classes = {};
+            gradesData.forEach(record => {
+                if (!classes[record.class]) {
+                    classes[record.class] = {};
+                }
+                
+                if (!classes[record.class][record.name]) {
+                    classes[record.class][record.name] = {};
+                }
+                
+                classes[record.class][record.name][record.subject] = record.grade;
+            });
+            
+            // Получаем все предметы
+            const allSubjects = new Set();
+            gradesData.forEach(record => {
+                allSubjects.add(record.subject);
+            });
+            const subjects = Array.from(allSubjects).sort();
+            
+            // Создаем HTML для таблицы
+            let html = '<div class="table-container">';
+            html += '<table class="grades-table">';
+            
+            // Заголовок таблицы
+            html += '<thead><tr>';
+            html += '<th style="color: gray">ФИО ученика</th>';
+            subjects.forEach(subject => {
+                html += `<th class="subject-header">${subject}</th>`;
+            });
+            html += '</tr></thead>';
+            
+            // Тело таблицы
+            html += '<tbody>';
+            
+            // Для каждого класса
+            Object.keys(classes).sort().forEach(className => {
+                // Заголовок класса
+                html += `<tr><td colspan="${subjects.length + 1}" style="color: gray" class="class-header">Класс: ${className}</td></tr>`;
+                
+                // Ученики этого класса
+                const students = Object.keys(classes[className]).sort();
+                students.forEach(studentName => {
+                    html += '<tr>';
+                    html += `<td class="student-name">${studentName}</td>`;
+                    
+                    // Оценки по предметам
+                    subjects.forEach(subject => {
+                        const grade = classes[className][studentName][subject];
+                        const gradeClass = grade ? `grade-${grade}` : '';
+                        const gradeDisplay = grade || '';
+                        html += `<td class="grade-cell ${gradeClass}">${gradeDisplay}</td>`;
+                    });
+                    
+                    html += '</tr>';
+                });
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

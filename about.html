@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О программе - Онлайн журнал оценок</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Онлайн журнал оценок</h1>
+            <p class="subtitle">Веб-приложение для учета и анализа успеваемости учащихся</p>
+        </header>
+        
+        <div class="tabs">
+            <a href="upload.html" class="tab">Загрузка оценок</a>
+            <a href="journal.html" class="tab">Журнал оценок</a>
+            <a href="grades-view.html" class="tab">Просмотр оценок</a>
+            <a href="stats-table.html" class="tab">Статистика (таблица)</a>
+            <a href="stats-chart.html" class="tab">Статистика (графики)</a>
+            <a href="help.html" class="tab">Помощь</a>
+            <a href="about.html" class="tab active">О программе</a>
+        </div>
+        
+        <div class="tab-content active">
+            <h2 class="section-title">О программе и разработчике</h2>
+            
+            <div class="about-content">
+                <div>
+                    <img src="https://thumbs.dreamstime.com/b/%D0%B0%D0%BD%D0%BE%D0%BD%D0%B8%D0%BC%D0%BD%D1%8B%D0%B9-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C-%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9-%D0%B7%D0%BD%D0%B0%D0%BA-man-avatar-%D0%BC%D1%83%D0%B6%D1%81%D0%BA%D0%BE%D0%B3%D0%BE-%D0%BF%D1%80%D0%BE%D1%84%D0%B8%D0%BB%D1%8F-%D0%B2-215427929.jpg" 
+                         alt="Фото разработчика" 
+                         class="developer-photo"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzRBNjQ5MSIvPjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LXNpemU9IjI0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+RGV2ZWxvcGVyPC90ZXh0Pjwvc3ZnPg=='">
+                </div>
+                <div class="developer-info">
+                    <h3>Разработчик приложения</h3>
+                    <p><strong>ФИО:</strong> Антилогов Александр Алексеевич</p>
+                    
+                    <div class="contact-info">
+                        <h3>Контактная информация</h3>
+                        <div><strong>📧 Email:</strong> aaallleecsandr@gmail.com</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <h3 class="section-title">Проект: "Онлайн журнал оценок"</h3>
+
+    <script>
+        // Подсвечиваем активную вкладку
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                const href = tab.getAttribute('href');
+                if (href === currentPage) {
+                    tab.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
